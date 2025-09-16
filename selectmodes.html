@@ -9,6 +9,11 @@
 </select>
 
 <h3>multiple</h3>
+<label>
+  Make select multiple repeatedly toggle selected option:
+  <input type=checkbox id=checkbox>
+</label>
+<br>
 <select multiple>
   <option id=one>one</option>
   <option id=two>two</option>
@@ -28,3 +33,22 @@
   <option>two</option>
   <option>three</option>
 </select>
+
+<script>
+const checkbox = document.getElementById('checkbox');
+let intervalId = null;
+function updateCheckbox() {
+  const toggleOption = () => {
+    const option = document.getElementById('two');
+    option.selected = !option.selected;
+  };
+  if (checkbox.checked) {
+    intervalId = setInterval(toggleOption, 2000);
+  } else if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+}
+checkbox.onchange = updateCheckbox;
+updateCheckbox();
+</script>
