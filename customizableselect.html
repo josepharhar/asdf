@@ -1,21 +1,96 @@
 <!DOCTYPE html>
-
 <style>
-select, ::picker(select) {
+.custom, .custom::picker(select) {
   appearance: base-select;
+}
+
+.code {
+  font-family: monospace;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: min-content min-content min-content;
+  gap: 2px;
+}
+.grid > div {
+  padding: 10px;
+  outline: 2px solid black;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 
-<p>Customizable select with no attributes:</p>
-<select>
-  <option>one</option>
-  <option>two</option>
-  <option>three</option>
-</select>
+<p>This is a test page which has each mode of the select element with auto appearance and base appearance.</p>
 
-<p>Customizable select with size=4:</p>
-<select size=4>
-  <option>one</option>
-  <option>two</option>
-  <option>three</option>
-</select>
+<div class=grid>
+  <div></div>
+  <div class=code>appearance: auto</div>
+  <div class=code>appearance: base-select</div>
+
+  <div>no attributes</div>
+  <div>
+    <select>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+  <div>
+    <select class=custom>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+
+  <div class=code>multiple</div>
+  <div>
+    <select multiple>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+  <div>
+    <select multiple class=custom>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+
+  <div class=code>size=4</div>
+  <div>
+    <select size=4>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+  <div>
+    <select size=4 class=custom>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+
+  <div class=code>multiple size=1</div>
+  <div>
+    <select multiple size=1>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+  <div>
+    <select multiple size=1 class=custom>
+      <option>mango</option>
+      <option>banana</option>
+      <option>orange</option>
+    </select>
+  </div>
+</div>
