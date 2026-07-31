@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<h1>Browser Default Form Controls Comparison</h1>
+
+<div class="comparison-container">
+
+    <!-- LIGHT MODE COLUMN -->
+    <div class="column light-mode-column">
+        <h2>Native Light Mode</h2>
+        <form>
+            <fieldset>
+                <legend>Text Inputs</legend>
+                <div class="control-group"><label>Text:</label><input type="text" placeholder="Type here..."></div>
+                <div class="control-group"><label>Password:</label><input type="password" value="password"></div>
+                <div class="control-group"><label>Email:</label><input type="email" placeholder="name@domain.com"></div>
+                <div class="control-group"><label>URL:</label><input type="url" placeholder="https://example.com"></div>
+                <div class="control-group"><label>Tel:</label><input type="tel" placeholder="123-456-7890"></div>
+                <div class="control-group"><label>Search:</label><input type="search" placeholder="Search..."></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Numbers &amp; Range</legend>
+                <div class="control-group"><label>Number:</label><input type="number" value="42"></div>
+                <div class="control-group"><label>Range:</label><input type="range"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Indicators &amp; Displays</legend>
+                <div class="control-group"><label>Meter (Optimum):</label><meter min="0" max="100" value="75" low="33" high="66" optimum="80">75%</meter></div>
+                <div class="control-group"><label>Meter (Warning):</label><meter min="0" max="100" value="50" low="33" high="66" optimum="15">50%</meter></div>
+                <div class="control-group"><label>Progress (Determinate):</label><progress value="60" max="100">60%</progress></div>
+                <div class="control-group"><label>Progress (Indeterminate):</label><progress></progress></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Selection</legend>
+                <div class="control-group">
+                    <label>Select:</label>
+                    <select>
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select (Size 4):</label>
+                    <select size="4">
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select Multiple:</label>
+                    <select multiple>
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select Multiple (Size 1):</label>
+                    <select multiple size="1">
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Datalist:</label>
+                    <input list="dl-light">
+                    <datalist id="dl-light"><option value="Option A"><option value="Option B"></datalist>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Date &amp; Time</legend>
+                <div class="control-group"><label>Date:</label><input type="date"></div>
+                <div class="control-group"><label>Time:</label><input type="time"></div>
+                <div class="control-group"><label>Datetime Local:</label><input type="datetime-local"></div>
+                <div class="control-group"><label>Month:</label><input type="month"></div>
+                <div class="control-group"><label>Week:</label><input type="week"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Choices &amp; Boxes</legend>
+                <div class="control-group row"><input type="checkbox" id="cb-l" checked><label for="cb-l">Checkbox</label></div>
+                <div class="control-group row"><input type="radio" id="r-l" checked><label for="r-l">Radio</label></div>
+                <div class="control-group row"><label>Color:</label><input type="color" value="#0076ff"></div>
+                <div class="control-group"><label>File:</label><input type="file"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Multi-line &amp; Buttons</legend>
+                <div class="control-group"><label>Textarea:</label><textarea rows="3"></textarea></div>
+                <div class="control-group row">
+                    <button type="submit">Submit Button</button>
+                    <button type="reset">Reset Button</button>
+                    <input type="button" value="Input Button">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <!-- DARK MODE COLUMN -->
+    <div class="column dark-mode-column">
+        <h2>Native Dark Mode</h2>
+        <form>
+            <fieldset>
+                <legend>Text Inputs</legend>
+                <div class="control-group"><label>Text:</label><input type="text" placeholder="Type here..."></div>
+                <div class="control-group"><label>Password:</label><input type="password" value="password"></div>
+                <div class="control-group"><label>Email:</label><input type="email" placeholder="name@domain.com"></div>
+                <div class="control-group"><label>URL:</label><input type="url" placeholder="https://example.com"></div>
+                <div class="control-group"><label>Tel:</label><input type="tel" placeholder="123-456-7890"></div>
+                <div class="control-group"><label>Search:</label><input type="search" placeholder="Search..."></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Numbers &amp; Range</legend>
+                <div class="control-group"><label>Number:</label><input type="number" value="42"></div>
+                <div class="control-group"><label>Range:</label><input type="range"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Indicators &amp; Displays</legend>
+                <div class="control-group"><label>Meter (Optimum):</label><meter min="0" max="100" value="75" low="33" high="66" optimum="80">75%</meter></div>
+                <div class="control-group"><label>Meter (Warning):</label><meter min="0" max="100" value="50" low="33" high="66" optimum="15">50%</meter></div>
+                <div class="control-group"><label>Progress (Determinate):</label><progress value="60" max="100">60%</progress></div>
+                <div class="control-group"><label>Progress (Indeterminate):</label><progress></progress></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Selection</legend>
+                <div class="control-group">
+                    <label>Select:</label>
+                    <select>
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select (Size 4):</label>
+                    <select size="4">
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select Multiple:</label>
+                    <select multiple>
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select Multiple (Size 1):</label>
+                    <select multiple size="1">
+                        <option>Option A</option>
+                        <option>Option B</option>
+                        <option>Option C</option>
+                        <option>Option D</option>
+                        <option>Option E</option>
+                        <option>Option F</option>
+                        <option>Option G</option>
+                        <option>Option H</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Datalist:</label>
+                    <input list="dl-dark">
+                    <datalist id="dl-dark"><option value="Option A"><option value="Option B"></datalist>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Date &amp; Time</legend>
+                <div class="control-group"><label>Date:</label><input type="date"></div>
+                <div class="control-group"><label>Time:</label><input type="time"></div>
+                <div class="control-group"><label>Datetime Local:</label><input type="datetime-local"></div>
+                <div class="control-group"><label>Month:</label><input type="month"></div>
+                <div class="control-group"><label>Week:</label><input type="week"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Choices &amp; Boxes</legend>
+                <div class="control-group row"><input type="checkbox" id="cb-d" checked><label for="cb-d">Checkbox</label></div>
+                <div class="control-group row"><input type="radio" id="r-d" checked><label for="r-d">Radio</label></div>
+                <div class="control-group row"><label>Color:</label><input type="color" value="#0076ff"></div>
+                <div class="control-group"><label>File:</label><input type="file"></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Multi-line &amp; Buttons</legend>
+                <div class="control-group"><label>Textarea:</label><textarea rows="3"></textarea></div>
+                <div class="control-group row">
+                    <button type="submit">Submit Button</button>
+                    <button type="reset">Reset Button</button>
+                    <input type="button" value="Input Button">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<style>
+        /* Global layout styles only - NO styles are applied to the form controls themselves */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #888888; /* Neutral gray background to make both modes stand out */
+        }
+
+        /* Displays columns side-by-side, but only as wide as their content */
+        .comparison-container {
+            display: inline-flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        /* Columns only wrap their natural contents */
+        .column {
+            display: inline-block;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        /* Forcing the browser's native Light Mode defaults */
+        .light-mode-column {
+            color-scheme: light;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* Forcing the browser's native Dark Mode defaults */
+        .dark-mode-column {
+            color-scheme: dark;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Prevents children from stretching horizontally */
+        .control-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .control-group.row {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+
+        fieldset {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+</style>
