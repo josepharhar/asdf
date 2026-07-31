@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs');
 
 // Read all files in current directory
@@ -9,8 +11,9 @@ const listItems = files.map(file => `<li><a href="${file}">${file}</a></li>`).jo
 
 // Wrap in full HTML template
 const htmlContent = `<!DOCTYPE html>
-<!-- this file is generated -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asdf</title>
+<!-- this file is generated -->
 <h1>All Pages</h1>
 <ul>
 ${listItems}
