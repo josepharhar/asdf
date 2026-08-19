@@ -11,13 +11,20 @@ const listItems = files.map(file => `<li><a href="${file}">${file}</a></li>`).jo
 
 // Wrap in full HTML template
 const htmlContent = `<!DOCTYPE html>
+<!-- this file is generated -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asdf</title>
-<!-- this file is generated -->
-<h1>All Pages</h1>
-<ul>
-${listItems}
-</ul>
+<style>
+li {
+  min-block-size: 24px;
+}
+</style>
+<h1>Testing pages</h1>
+<nav>
+  <ul>
+    ${listItems}
+  </ul>
+</nav>
 `;
 
 fs.writeFileSync('index.html', htmlContent);
