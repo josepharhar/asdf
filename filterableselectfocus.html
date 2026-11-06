@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filterable select: focus and keyboard behavior options</title>
+<style>
+  :root { font-family: system-ui, sans-serif; line-height: 1.4; color: #1f2328; }
+  body { max-width: 1100px; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; margin: 0 0 .25rem; }
+  code { background: #f2f4f6; padding: 0 .25em; border-radius: 3px; }
+  .settings { border: 1px solid #d0d7de; border-radius: 8px; padding: .75rem 1rem; background: #f6f8fa; }
+  .settings label { display: block; margin: .25rem 0; }
+  .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-top: 1rem; }
+  section.demo { border: 1px solid #d0d7de; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+  section.demo > p { margin: 0; font-size: .9rem; }
+  ul.keys { margin: 0; padding-left: 1.2rem; font-size: .85rem; }
+  .tabstop { font-size: .8rem; align-self: flex-start; }
+  .widget { border: 1px solid #8c959f; border-radius: 6px; padding: .5rem; display: flex; flex-direction: column; gap: .4rem; }
+  .widget label { font-size: .85rem; font-weight: 600; }
+  .widget input { font: inherit; padding: .3rem .4rem; border: 1px solid #8c959f; border-radius: 4px; }
+  .widget input:focus-visible { outline: 2px solid #0969da; outline-offset: 1px; }
+  [role=listbox] { list-style: none; margin: 0; padding: 2px; height: 10.5em; overflow-y: auto; border: 1px solid #d0d7de; border-radius: 4px; }
+  [role=option] { padding: .15rem .4rem .15rem 1.6rem; border-radius: 3px; cursor: default; position: relative; user-select: none; }
+  [role=option]:hover { background: #eaeef2; }
+  [role=option][aria-selected=true] { font-weight: 600; }
+  [role=option][aria-selected=true]::before { content: "✓"; position: absolute; left: .4rem; }
+  /* Emulates option:active-option (virtual focus via aria-activedescendant). */
+  [role=option].active-option { background: #0969da; color: white; }
+  /* Real DOM focus on an option. Deliberately styled differently so both states can be seen. */
+  [role=option]:focus { outline: none; }
+  [role=option]:focus-visible { outline: 2px dashed #bf3989; outline-offset: -2px; background: #ffeff7; color: inherit; }
+  .empty { font-size: .85rem; color: #57606a; font-style: italic; padding: .2rem .4rem; }
+  dl.status { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .1rem .6rem; font-size: .8rem; background: #f6f8fa; border-radius: 4px; padding: .4rem .6rem; }
+  dl.status dt { font-weight: 600; color: #57606a; }
+  dl.status dd { margin: 0; font-family: ui-monospace, monospace; }
+  .legend span { display: inline-block; padding: 0 .4rem; border-radius: 3px; margin-right: .5rem; }
+  .legend .l-active { background: #0969da; color: white; }
+  .legend .l-focus { outline: 2px dashed #bf3989; outline-offset: -2px; background: #ffeff7; }
+  table { border-collapse: collapse; font-size: .85rem; margin-top: .5rem; }
+  th, td { border: 1px solid #d0d7de; padding: .25rem .5rem; text-align: left; vertical-align: top; }
+  th { background: #f6f8fa; }
+  .note { font-size: .85rem; color: #57606a; }
+</style>
+</head>
+<body>
+<h1>Filterable select: focus and keyboard behavior options</h1>
+<p>
+  This page simulates three possible keyboard/focus models for
+  <a href="https://open-ui.org/components/filterable-select.explainer/">filterable select</a>
+  using plain HTML, ARIA and JS, so they can be compared in any browser and with assistive technology.
+  It is <strong>not</strong> the native feature. See also
+  <a href="https://github.com/w3c/aria/issues/2841">w3c/aria#2841</a>.
+</p>
+<p class="legend">
+  Legend:
+  <span class="l-active">virtual focus (<code>:active-option</code> / <code>aria-activedescendant</code>)</span>
+  <span class="l-focus">real DOM focus (<code>:focus-visible</code>)</span>
+  ✓ = selected
+</p>
+
+<div class="settings">
+  <label><input type="checkbox" id="setting-multiple"> Multiple select (<code>&lt;select multiple&gt;</code>)</label>
+  <label><input type="checkbox" id="setting-follow" checked> Single select: selection follows real focus when arrowing within the listbox (like a native <code>&lt;select size=4&gt;</code>)</label>
+  <label><input type="checkbox" id="setting-empty" checked> Show "No results" when everything is filtered out</label>
+</div>
+
+<div class="demos" id="demos"></div>
+
+<h2 style="margin-top:2rem">Keyboard summary</h2>
+<table>
+  <thead>
+    <tr><th>Key</th><th>Option 1: active-option + focusable options</th><th>Option 2: active-option only</th><th>Option 3: real focus moves to options</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Typing in text field</td><td colspan="3">Filters options. Clears any active option.</td></tr>
+    <tr><td>ArrowDown in text field</td><td colspan="2">Moves the active option (focus stays in text field)</td><td>Moves DOM focus to the first visible option</td></tr>
+    <tr><td>ArrowUp in text field</td><td colspan="2">Moves active option up; from the first option, clears it (back to "text editing")</td><td>Default text field behavior</td></tr>
+    <tr><td>Enter in text field</td><td colspan="2">Selects/toggles the active option</td><td>Nothing</td></tr>
+    <tr><td>Left/Right/Home/End/Escape in text field</td><td colspan="2">Clears the active option (and Left/Right/Home/End do their normal caret movement)</td><td>Default text field behavior</td></tr>
+    <tr><td>Tab from text field</td><td>Focuses an option in the listbox</td><td>Leaves the widget</td><td>Focuses an option in the listbox</td></tr>
+    <tr><td>Arrows in listbox</td><td>Move DOM focus between options; ArrowUp on first option returns to text field</td><td>n/a (listbox not focusable)</td><td>Move DOM focus between options; ArrowUp on first option returns to text field</td></tr>
+    <tr><td>Leaving the text field (Tab, click elsewhere)</td><td colspan="2">Clears the active option</td><td>n/a</td></tr>
+    <tr><td>Space / Enter in listbox</td><td>Select/toggle focused option</td><td>n/a</td><td>Select/toggle focused option</td></tr>
+    <tr><td>Printable characters in listbox</td><td>Typeahead</td><td>n/a</td><td>Configurable: typeahead, or redirect to text field</td></tr>
+    <tr><td>Clicking an option</td><td>Selects/toggles; focus moves to option</td><td>Selects/toggles; focus stays in text field</td><td>Selects/toggles; focus moves to option</td></tr>
+  </tbody>
+</table>
+
+<h2 style="margin-top:2rem">Native prototype</h2>
+<p class="note">
+  Only works in Chromium with <code>chrome://flags/#enable-experimental-web-platform-features</code>.
+  The prototype implements Option 1. In other browsers this renders as an unrelated text field and listbox.
+</p>
+<div class="widget" style="max-width: 320px">
+  <input filter="native-select" placeholder="Filter labels..." aria-label="Filter labels">
+  <select id="native-select" size="6" style="appearance: base-select" aria-label="Labels"></select>
+</div>
+
+<template id="demo-template">
+  <section class="demo">
+    <h2></h2>
+    <p class="desc"></p>
+    <ul class="keys"></ul>
+    <button class="tabstop">Focusable thing before</button>
+    <div class="widget">
+      <label></label>
+      <input type="text" autocomplete="off" spellcheck="false" placeholder="Filter labels...">
+      <ul role="listbox"></ul>
+      <div class="empty" hidden role="status"></div>
+    </div>
+    <button class="tabstop">Focusable thing after</button>
+    <dl class="status">
+      <dt>DOM focus</dt><dd class="s-focus">—</dd>
+      <dt>Active option</dt><dd class="s-active">—</dd>
+      <dt>Selected</dt><dd class="s-selected">—</dd>
+    </dl>
+  </section>
+</template>
+
+<script>
+const LABELS = [
+  'Accessibility', 'Agenda+', 'Bug', 'Deep dive', 'Documentation', 'Duplicate',
+  'Enhancement', 'Good first issue', 'Help wanted', 'Invalid', 'Performance',
+  'Question', 'Security', 'Stale', 'Wontfix',
+];
+
+const VARIANTS = {
+  1: {
+    title: 'Option 1: text field controls listbox AND options are focusable',
+    desc: 'What the Chromium prototype does. Arrow keys in the text field move a virtual "active option". The options are also in the tab order and can be focused for real.',
+    keys: [
+      'Type to filter, ArrowDown/ArrowUp to move the active option, Enter to choose.',
+      'Tab from the text field into the listbox, then arrows + Space/Enter. ArrowUp on the first option returns to the text field.',
+      'Note that an option can be :active-option or :focus-visible, so authors need to style both.',
+    ],
+    activeDescendant: true,
+    focusableOptions: true,
+  },
+  2: {
+    title: 'Option 2: text field controls listbox, options are NOT focusable',
+    desc: 'Like the GitHub labels picker. Options can only be reached with the keyboard via the text field\'s virtual focus. Tab skips the listbox.',
+    keys: [
+      'Type to filter, ArrowDown/ArrowUp to move the active option, Enter to choose.',
+      'Tab from the text field leaves the widget.',
+      'Clicking an option keeps focus in the text field.',
+    ],
+    activeDescendant: true,
+    focusableOptions: false,
+  },
+  3: {
+    title: 'Option 3: text field only filters, ArrowDown moves real focus',
+    desc: 'No virtual focus / :active-option at all. The text field is a plain text field; ArrowDown (or Tab) moves DOM focus into the listbox.',
+    keys: [
+      'Type to filter, then ArrowDown (or Tab) to move focus into the listbox.',
+      'In the listbox: arrows move focus, Space/Enter chooses, ArrowUp on the first option goes back to the text field.',
+    ],
+    activeDescendant: false,
+    focusableOptions: true,
+    extraSetting: true,
+  },
+};
+
+const settings = {
+  multiple: false,
+  followFocus: true,
+  showEmpty: true,
+  typing: 'typeahead', // Option 3 only: 'typeahead' | 'redirect'
+};
+
+const demos = [];
+
+function createDemo(variantNumber) {
+  const variant = VARIANTS[variantNumber];
+  const prefix = `v${variantNumber}`;
+  const section = document.getElementById('demo-template').content.firstElementChild.cloneNode(true);
+  section.querySelector('h2').textContent = variant.title;
+  section.querySelector('.desc').textContent = variant.desc;
+  const keysList = section.querySelector('.keys');
+  for (const k of variant.keys) {
+    const li = document.createElement('li');
+    li.textContent = k;
+    keysList.append(li);
+  }
+
+  if (variant.extraSetting) {
+    const fieldset = document.createElement('fieldset');
+    fieldset.style.fontSize = '.85rem';
+    fieldset.innerHTML = `
+      <legend>Printable characters while focus is in the listbox</legend>
+      <label><input type="radio" name="${prefix}-typing" value="typeahead"> Typeahead within the listbox (native listbox behavior)</label><br>
+      <label><input type="radio" name="${prefix}-typing" value="redirect"> Move focus back to the text field and type there</label>`;
+    fieldset.querySelector(`input[value=${settings.typing}]`).checked = true;
+    fieldset.addEventListener('change', e => { settings.typing = e.target.value; });
+    keysList.after(fieldset);
+  }
+
+  const input = section.querySelector('.widget input');
+  const label = section.querySelector('.widget label');
+  const listbox = section.querySelector('[role=listbox]');
+  const emptyMessage = section.querySelector('.empty');
+  input.id = `${prefix}-input`;
+  label.htmlFor = input.id;
+  label.textContent = 'Filter labels';
+  listbox.id = `${prefix}-listbox`;
+  listbox.setAttribute('aria-label', 'Labels');
+  if (settings.multiple) listbox.setAttribute('aria-multiselectable', 'true');
+  // Per jcsteh's feedback, a controls relationship is harmless and allows AT to use it in future.
+  input.setAttribute('aria-controls', listbox.id);
+
+  const options = LABELS.map((text, i) => {
+    const li = document.createElement('li');
+    li.setAttribute('role', 'option');
+    li.id = `${prefix}-opt-${i}`;
+    li.textContent = text;
+    li.setAttribute('aria-selected', 'false');
+    listbox.append(li);
+    return li;
+  });
+
+  let activeOption = null;   // virtual focus (Options 1 & 2)
+  let lastFocused = null;    // roving tabindex memory (Options 1 & 3)
+
+  const visibleOptions = () => options.filter(o => !o.hidden);
+  const isSelected = o => o.getAttribute('aria-selected') === 'true';
+
+  function setActive(option) {
+    activeOption?.classList.remove('active-option');
+    activeOption = option;
+    if (option) {
+      option.classList.add('active-option');
+      // Only set activedescendant once the user has arrowed into the list (aria#2841 feedback).
+      input.setAttribute('aria-activedescendant', option.id);
+      option.scrollIntoView({block: 'nearest'});
+    } else {
+      input.removeAttribute('aria-activedescendant');
+    }
+  }
+
+  function choose(option) {
+    if (settings.multiple) {
+      option.setAttribute('aria-selected', String(!isSelected(option)));
+    } else {
+      for (const o of options) o.setAttribute('aria-selected', String(o === option));
+    }
+  }
+
+  function updateRovingTabindex() {
+    if (!variant.focusableOptions) return;
+    const visible = visibleOptions();
+    const tabbable =
+      (lastFocused && !lastFocused.hidden && lastFocused) ||
+      visible.find(isSelected) ||
+      visible[0];
+    for (const o of options) o.tabIndex = o === tabbable ? 0 : -1;
+  }
+
+  function focusOption(option, viaArrowKey) {
+    if (!option) return;
+    lastFocused = option;
+    updateRovingTabindex();
+    option.focus();
+    option.scrollIntoView({block: 'nearest'});
+    if (viaArrowKey && !settings.multiple && settings.followFocus) choose(option);
+  }
+
+  function filter() {
+    const query = input.value.trim().toLowerCase();
+    let count = 0;
+    for (const o of options) {
+      o.hidden = query !== '' && !o.textContent.toLowerCase().includes(query);
+      if (!o.hidden) count++;
+    }
+    setActive(null);
+    updateRovingTabindex();
+    emptyMessage.hidden = !(settings.showEmpty && count === 0);
+    emptyMessage.textContent = count === 0 ? 'No results' : '';
+  }
+
+  input.addEventListener('input', filter);
+
+  input.addEventListener('keydown', e => {
+    const visible = visibleOptions();
+    if (!variant.activeDescendant) {
+      // Option 3: the text field only filters. ArrowDown moves real focus.
+      if (e.key === 'ArrowDown' && visible.length) {
+        e.preventDefault();
+        focusOption(visible[0], true);
+      }
+      return;
+    }
+    switch (e.key) {
+      case 'ArrowDown': {
+        e.preventDefault();
+        if (!visible.length) return;
+        const i = activeOption ? visible.indexOf(activeOption) : -1;
+        setActive(visible[Math.min(i + 1, visible.length - 1)]);
+        break;
+      }
+      case 'ArrowUp': {
+        if (!activeOption) return;
+        e.preventDefault();
+        const i = visible.indexOf(activeOption);
+        setActive(i > 0 ? visible[i - 1] : null);
+        break;
+      }
+      case 'Enter':
+        if (activeOption) {
+          e.preventDefault();
+          choose(activeOption);
+        }
+        break;
+      case 'Escape':
+        if (activeOption) {
+          e.preventDefault();
+          setActive(null);
+        }
+        break;
+      case 'ArrowLeft': case 'ArrowRight': case 'Home': case 'End':
+        // Editing/caret keys return to "text editing" mode (aria#2841 feedback).
+        setActive(null);
+        break;
+    }
+  });
+
+  input.addEventListener('blur', () => setActive(null));
+
+  // Typeahead within the listbox.
+  let typeaheadBuffer = '';
+  let typeaheadTimer = 0;
+  function typeahead(char, current) {
+    clearTimeout(typeaheadTimer);
+    typeaheadTimer = setTimeout(() => { typeaheadBuffer = ''; }, 600);
+    typeaheadBuffer += char.toLowerCase();
+    const visible = visibleOptions();
+    const start = typeaheadBuffer.length === 1 ? visible.indexOf(current) + 1 : visible.indexOf(current);
+    const ordered = [...visible.slice(start), ...visible.slice(0, start)];
+    const match = ordered.find(o => o.textContent.toLowerCase().startsWith(typeaheadBuffer));
+    if (match) focusOption(match, true);
+  }
+
+  function redirectToInput(edit) {
+    input.focus();
+    edit();
+    input.setSelectionRange(input.value.length, input.value.length);
+    filter();
+  }
+
+  if (variant.focusableOptions) {
+    listbox.addEventListener('keydown', e => {
+      const current = e.target.closest('[role=option]');
+      if (!current) return;
+      const visible = visibleOptions();
+      const i = visible.indexOf(current);
+      const redirect = !variant.activeDescendant && settings.typing === 'redirect';
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          if (i < visible.length - 1) focusOption(visible[i + 1], true);
+          return;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (i > 0) focusOption(visible[i - 1], true);
+          else input.focus();
+          return;
+        case 'Home':
+          e.preventDefault();
+          focusOption(visible[0], true);
+          return;
+        case 'End':
+          e.preventDefault();
+          focusOption(visible[visible.length - 1], true);
+          return;
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          choose(current);
+          return;
+        case 'Backspace':
+          if (redirect) {
+            e.preventDefault();
+            redirectToInput(() => { input.value = input.value.slice(0, -1); });
+          }
+          return;
+      }
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        if (redirect) {
+          redirectToInput(() => { input.value += e.key; });
+        } else {
+          typeahead(e.key, current);
+        }
+      }
+    });
+    listbox.addEventListener('focusin', e => {
+      const option = e.target.closest('[role=option]');
+      if (option) {
+        lastFocused = option;
+        updateRovingTabindex();
+      }
+    });
+  }
+
+  listbox.addEventListener('mousedown', e => {
+    // Option 2: keep focus in the text field when clicking options.
+    if (!variant.focusableOptions) e.preventDefault();
+  });
+  listbox.addEventListener('click', e => {
+    const option = e.target.closest('[role=option]');
+    if (!option) return;
+    choose(option);
+    if (variant.activeDescendant && !variant.focusableOptions) setActive(option);
+  });
+
+  filter();
+
+  const sFocus = section.querySelector('.s-focus');
+  const sActive = section.querySelector('.s-active');
+  const sSelected = section.querySelector('.s-selected');
+  function describe(el) {
+    if (!el || !section.contains(el)) return '(outside this demo)';
+    if (el === input) return 'text field';
+    if (el.getAttribute('role') === 'option') return `option "${el.textContent}"`;
+    if (el.tagName === 'BUTTON') return `"${el.textContent}" button`;
+    if (el.tagName === 'INPUT') return 'settings radio';
+    return el.tagName.toLowerCase();
+  }
+  function updateStatus() {
+    sFocus.textContent = describe(document.activeElement);
+    sActive.textContent = variant.activeDescendant
+      ? (activeOption ? `"${activeOption.textContent}"` : 'none')
+      : 'n/a (no virtual focus in this model)';
+    const selected = options.filter(isSelected).map(o => o.textContent);
+    sSelected.textContent = selected.length ? selected.join(', ') : 'none';
+  }
+
+  return {section, updateStatus};
+}
+
+function render() {
+  const container = document.getElementById('demos');
+  container.replaceChildren();
+  demos.length = 0;
+  for (const n of [1, 2, 3]) {
+    const demo = createDemo(n);
+    container.append(demo.section);
+    demos.push(demo);
+  }
+}
+
+document.getElementById('setting-multiple').addEventListener('change', e => {
+  settings.multiple = e.target.checked;
+  render();
+  const nativeSelect = document.getElementById('native-select');
+  nativeSelect.multiple = settings.multiple;
+});
+document.getElementById('setting-follow').addEventListener('change', e => { settings.followFocus = e.target.checked; });
+document.getElementById('setting-empty').addEventListener('change', e => { settings.showEmpty = e.target.checked; render(); });
+
+(function setUpNative() {
+  const select = document.getElementById('native-select');
+  for (const text of LABELS) select.append(new Option(text, text.toLowerCase()));
+})();
+
+render();
+setInterval(() => demos.forEach(d => d.updateStatus()), 150);
+</script>
+</body>
+</html>
