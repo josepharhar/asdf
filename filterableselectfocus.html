@@ -62,7 +62,6 @@
 
 <div class="settings">
   <label><input type="checkbox" id="setting-multiple"> Multiple select (<code>&lt;select multiple&gt;</code>)</label>
-  <label><input type="checkbox" id="setting-follow" checked> Single select: selection follows real focus when arrowing within the listbox (like a native <code>&lt;select size=4&gt;</code>)</label>
   <label><input type="checkbox" id="setting-empty" checked> Show "No results" when everything is filtered out</label>
 </div>
 
@@ -164,7 +163,6 @@ const VARIANTS = {
 
 const settings = {
   multiple: false,
-  followFocus: true,
   showEmpty: true,
   typing: 'typeahead', // Option 3 only: 'typeahead' | 'redirect'
 };
@@ -256,13 +254,12 @@ function createDemo(variantNumber) {
     for (const o of options) o.tabIndex = o === tabbable ? 0 : -1;
   }
 
-  function focusOption(option, viaArrowKey) {
+  function focusOption(option) {
     if (!option) return;
     lastFocused = option;
     updateRovingTabindex();
     option.focus();
     option.scrollIntoView({block: 'nearest'});
-    if (viaArrowKey && !settings.multiple && settings.followFocus) choose(option);
   }
 
   function filter() {
@@ -286,7 +283,7 @@ function createDemo(variantNumber) {
       // Option 3: the text field only filters. ArrowDown moves real focus.
       if (e.key === 'ArrowDown' && visible.length) {
         e.preventDefault();
-        focusOption(visible[0], true);
+        focusOption(visible[0]);
       }
       return;
     }
@@ -337,7 +334,7 @@ function createDemo(variantNumber) {
     const start = typeaheadBuffer.length === 1 ? visible.indexOf(current) + 1 : visible.indexOf(current);
     const ordered = [...visible.slice(start), ...visible.slice(0, start)];
     const match = ordered.find(o => o.textContent.toLowerCase().startsWith(typeaheadBuffer));
-    if (match) focusOption(match, true);
+    if (match) focusOption(match);
   }
 
   function redirectToInput(edit) {
@@ -357,20 +354,20 @@ function createDemo(variantNumber) {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          if (i < visible.length - 1) focusOption(visible[i + 1], true);
+          if (i < visible.length - 1) focusOption(visible[i + 1]);
           return;
         case 'ArrowUp':
           e.preventDefault();
-          if (i > 0) focusOption(visible[i - 1], true);
+          if (i > 0) focusOption(visible[i - 1]);
           else input.focus();
           return;
         case 'Home':
           e.preventDefault();
-          focusOption(visible[0], true);
+          focusOption(visible[0]);
           return;
         case 'End':
           e.preventDefault();
-          focusOption(visible[visible.length - 1], true);
+          focusOption(visible[visible.length - 1]);
           return;
         case ' ':
         case 'Enter':
@@ -455,7 +452,6 @@ document.getElementById('setting-multiple').addEventListener('change', e => {
   const nativeSelect = document.getElementById('native-select');
   nativeSelect.multiple = settings.multiple;
 });
-document.getElementById('setting-follow').addEventListener('change', e => { settings.followFocus = e.target.checked; });
 document.getElementById('setting-empty').addEventListener('change', e => { settings.showEmpty = e.target.checked; render(); });
 
 (function setUpNative() {
