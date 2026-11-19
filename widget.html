@@ -23,6 +23,7 @@
 <table>
   <tr><td>Embedded in</td><td id=site></td></tr>
   <tr><td>This iframe loaded</td><td id=loaded></td></tr>
+  <tr><td>Storage partition</td><td id=partition></td></tr>
   <tr><td>Worker instance</td><td id=worker>connecting…</td></tr>
   <tr><td>Clients</td><td id=clients></td></tr>
   <tr><td>WebSocket</td><td id=ws></td></tr>
@@ -49,6 +50,28 @@ const site = (location.ancestorOrigins && location.ancestorOrigins[0]) ||
              '(top level)';
 $('site').textContent = site;
 $('loaded').textContent = new Date(loadedAt).toLocaleTimeString();
+
+// Diagnostic: a random ID persisted in localStorage. If two embedding pages
+// show different IDs, the browser gave this iframe separate storage
+// partitions on them, so it would also get separate SharedWorkers. If the IDs
+// match but the worker ID changes, the worker just didn't survive navigation.
+try {
+  let partition = JSON.parse(localStorage.getItem('partition') || 'null');
+  const isNew = !partition;
+  if (isNew) {
+    partition = {
+      id: Math.random().toString(36).slice(2, 8),
+      createdAt: Date.now(),
+      createdOn: site,
+    };
+    localStorage.setItem('partition', JSON.stringify(partition));
+  }
+  $('partition').textContent =
+    `#${partition.id}, created ${new Date(partition.createdAt).toLocaleString()} ` +
+    `while embedded in ${partition.createdOn}` + (isNew ? ' (just now)' : '');
+} catch (e) {
+  $('partition').textContent = `localStorage unavailable: ${e.message}`;
+}
 
 const ago = (t) => {
   const s = Math.round((Date.now() - t) / 1000);
